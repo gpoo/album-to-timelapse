@@ -25,10 +25,11 @@ def get_metadata(f):
         o = int(i.metadata[ORIENTATION]) if ORIENTATION in i.metadata else -1
         m = i.metadata['exif:Make']
 
-        if m == 'LGE':
-            orientation = 'Portrait' if h > w else 'Landscape'
-        elif m == 'FUJIFILM':
+        if m in ('FUJIFILM', 'NIKON CORPORATION', 'Canon', 'samsung'):
             orientation = 'Portrait' if o in (6, 8) else 'Landscape'
+        else:
+            orientation = 'Portrait' if h > w else 'Landscape'
+
         return w, h, o, d, m, orientation
 
 def process_fujifilm(img, w, h, o):
@@ -52,12 +53,13 @@ def process(f, w, h, o, d, m, o2, output):
     height = 1080
 
     with Image(filename=f) as f:
-        if m == 'FUJIFILM':
+        if m in ('FUJIFILM', 'NIKON CORPORATION', 'Canon', 'samsung'):
             img = process_fujifilm(f, w, h, o)
         elif m == 'LGE':
             img = process_lge(f, w, h, o)
         else:
             logging.warning('Unknown camera {}'.format(m))
+            img = f
 
         img.transform(resize='{}x{}'.format(width, height))
 
@@ -66,10 +68,7 @@ def process(f, w, h, o, d, m, o2, output):
             out.composite(img, left=int((width - img.width)/ 2),
                           top=int((height - img.height) / 2))
             logging.info(output)
-            if isfile(output):
-                logging.warning('{} already exists!, skiping'.format(output))
-            else:
-                out.save(filename=output)
+            out.save(filename=output)
 
 def main(args, dstdir):
     dt_from_filter = datetime.strptime('2016:12:24 0:0:0',
