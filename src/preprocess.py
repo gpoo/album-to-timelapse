@@ -85,9 +85,24 @@ def main(args, dstdir):
         w, h, o, d, m, o2 = get_metadata(i)
         logging.info('{} {}x{} {} {} {} {}'.format(basename(i),
                                                    w, h, o, d, m, o2))
-        dt = datetime.strptime(d, '%Y:%m:%d %H:%M:%S')
+        try:
+            dt = datetime.strptime(d, '%Y:%m:%d %H:%M:%S')
+        except ValueError as err:
+            logging.error(i)
+            logging.error(err.args)
+        except TypeError as err:
+            logging.error(i)
+            logging.error(err.args)
+
         if dt >= dt_from_filter:
             output = join(dstdir, dt.strftime('%Y%m%d-%H%M%S.jpg'))
+
+            if isfile(output):
+                logging.warning('{} -> {} already exists!, renaming'.
+                                format(basename(i), output))
+                output = join(dstdir, '{}+{}'.format(
+                              dt.strftime('%Y%m%d-%H%M%S'),
+                              basename(i)))
             process(i, w, h, o, dt, m, o2, output)
 
 def start():
