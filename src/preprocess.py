@@ -17,10 +17,11 @@ def get_metadata(f):
     ORIENTATION = 'exif:Orientation'
     WIDTH = 'exif:ExifImageWidth'
     HEIGHT = 'exif:ExifImageLength'
+    DATE = 'exif:DateTimeOriginal'
     with Image(filename=f) as i:
         w = int(i.metadata[WIDTH]) if WIDTH in i.metadata else -1
         h = int(i.metadata[HEIGHT]) if HEIGHT in i.metadata else -1
-        d = i.metadata['exif:DateTime']
+        d = i.metadata[DATE] if DATE in i.metadata else -1
         o = int(i.metadata[ORIENTATION]) if ORIENTATION in i.metadata else -1
         m = i.metadata['exif:Make']
 
