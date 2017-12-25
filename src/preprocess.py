@@ -71,7 +71,7 @@ def process(f, w, h, o, d, m, o2, output):
             out.save(filename=output)
 
 def main(args, dstdir):
-    dt_from_filter = datetime.strptime('2016:12:24 0:0:0',
+    dt_from_filter = datetime.strptime('2016:12:23 0:0:0',
                                        '%Y:%m:%d %H:%M:%S')
     files = []
     for i in args:
